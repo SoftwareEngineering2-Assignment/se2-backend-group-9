@@ -29,4 +29,3 @@ jobs:
            git pull https://${{ secrets.CLONE_TOKEN }}@github.com/SoftwareEngineering2-Assignment/se2-backend-group-9 main
            bash -ci 'npm install'
            bash -ci 'pm2 restart example-backend-9'
-  
