@@ -17,3 +17,7 @@ test('Sum of 2 numbers', (t) => {
   t.pass('this assertion passed');
   t.is(sum(1, 2), 3);
 });
+
+test('Test test', (t) => {
+  t.is('apple', 'apple');
+});
