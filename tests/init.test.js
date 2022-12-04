@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-require('dotenv').config();
+//require('dotenv').config();
 
 const http = require('node:http');
 const test = require('ava').default;
@@ -8,6 +8,9 @@ const listen = require('test-listen');
 
 const app = require('../src/index');
 const {jwtSign} = require('../src/utilities/authentication/helpers');
+
+require('dotenv').config();
+console.log(process.env);
 
 test.before(async (t) => {
   t.context.server = http.createServer(app);
