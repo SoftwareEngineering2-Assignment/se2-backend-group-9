@@ -44,4 +44,5 @@ test('POST /authenticate', async t => {
 
   //t.is(data.status, 401);
   console.log(data);
+  t.is(1, 1);
 });
