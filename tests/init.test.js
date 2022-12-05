@@ -33,4 +33,15 @@ test('GET /statistics returns correct response and status code', async (t) => {
 //   const token = jwtSign({id: 1});
 //   const {statusCode} = await t.context.got(`sources/sources?token=${token}`);
 //   t.is(statusCode, 200);
-// });
+
+test('POST /authenticate', async t => {
+  const username = 'dummy';
+  const password = '12345678';
+
+  const data = await t.context.got.post('users/authenticate', {
+        json: { username, password }
+      }).json()
+
+  //t.is(data.status, 401);
+  console.log(data);
+});
