@@ -31,3 +31,10 @@ test('GET /sources returns correct response and status code', async (t) => {
   const {statusCode} = await t.context.got(`sources/sources?token=${token}`);
   t.is(statusCode, 200);
 });
+
+test('GET /dashboard returns correct response and status code', async (t) => {
+  const token = jwtSign({id: 1});
+  const {body, statusCode} = await t.context.got(`dashboards/dashboards?token=${token}`);
+  t.assert(body.success);
+  t.is(statusCode, 200);
+});
