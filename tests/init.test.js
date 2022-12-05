@@ -38,3 +38,12 @@ test('GET /dashboard returns correct response and status code', async (t) => {
   t.assert(body.success);
   t.is(statusCode, 200);
 });
+
+test('POST /authenticate', async t => {
+  const username = 'dummy'
+  const password = '12345678'
+  const response = await request(app).post('/authenticate').send({username, password});
+    
+  t.is(response.status, 200);
+  t.is(response.body.username, username);
+})
