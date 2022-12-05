@@ -39,11 +39,26 @@ test('GET /dashboard returns correct response and status code', async (t) => {
   t.is(statusCode, 200);
 });
 
-test('POST /authenticate', async t => {
-  const username = 'dummy'
-  const password = '12345678'
-  const response = await request(app).post('/authenticate').send({username, password});
-    
-  t.is(response.status, 200);
-  t.is(response.body.username, username);
+test('POST /create should return error if user exists', async t => {
+  const username = 'dummy';
+  const password = '12345678';
+  const email = 'dummy@gmail.com';
+  
+  const data = await t.context.got.post(`users/create`, {
+        json: { username, password, email }
+      }).json();
+  t.is(data.status, 409);
+})
+
+test('POST /authenticate authenticates correctly a dummy user', async t => {
+  
+  //change to secrets
+  
+  const username = 'dummy';
+  const password = '12345678';
+  
+  const data = await t.context.got.post(`users/authenticate`, {
+        json: { username, password }
+      }).json();
+  t.is(data.user.username, username);
 })
