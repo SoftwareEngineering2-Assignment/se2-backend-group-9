@@ -39,8 +39,8 @@ test('GET /dashboard returns correct response and status code', async (t) => {
   t.is(statusCode, 200);
 });
 
-test('POST /create should return error if user exists', async t => {
-  const username = 'dummy5';
+test('POST /create should return error if email or user exists', async t => {
+  const username = 'dummy';
   const password = '12345678';
   const email = 'dummy@gmail.com';
   
