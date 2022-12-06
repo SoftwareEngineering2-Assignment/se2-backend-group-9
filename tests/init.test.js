@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-require('dotenv').config();
+//require('dotenv').config();
 
 const http = require('node:http');
 const test = require('ava').default;
@@ -8,6 +8,9 @@ const listen = require('test-listen');
 
 const app = require('../src/index');
 const {jwtSign} = require('../src/utilities/authentication/helpers');
+
+require('dotenv').config(app.env);
+console.log(process.env);
 
 test.before(async (t) => {
   t.context.server = http.createServer(app);
@@ -27,11 +30,22 @@ test('GET /statistics returns correct response and status code', async (t) => {
   t.is(statusCode, 200);
 });
 
-/*Test for the response and status code of get sources */
-test('GET /sources returns correct response and status code', async (t) => {
-  const token = jwtSign({id: 1});
-  const {statusCode} = await t.context.got(`sources/sources?token=${token}`);
-  t.is(statusCode, 200);
+// test('GET /sources returns correct response and status code', async (t) => {
+//   const token = jwtSign({id: 1});
+//   const {statusCode} = await t.context.got(`sources/sources?token=${token}`);
+//   t.is(statusCode, 200);
+
+test('POST /authenticate', async t => {
+  const username = 'dummy';
+  const password = '12345678';
+
+  const data = await t.context.got.post('users/authenticate', {
+        json: { username, password }
+      }).json()
+
+  //t.is(data.status, 401);
+  console.log(data);
+  t.is(1, 1);
 });
 
 /*Test for the response and status code of get dashboard */
