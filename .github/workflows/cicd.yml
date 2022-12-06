@@ -24,4 +24,3 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ~/se2/9/se2-backend-group-9
-            git reset --hard origin/main
