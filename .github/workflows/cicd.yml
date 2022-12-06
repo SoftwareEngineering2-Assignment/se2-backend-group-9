@@ -21,10 +21,8 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
-          port: 3009
+          port: ${{ secrets.SSH_PORT }}
           script: |
             cd ~/se2/9/se2-backend-group-9
             git reset --hard origin/main
             git pull https://${{ secrets.CLONE_TOKEN }}@github.com/SoftwareEngineering2-Assignment/se2-backend-group-9 main
-            bash -ci 'npm install'
-            bash -ci 'pm2 restart se2-backend-group-9'
