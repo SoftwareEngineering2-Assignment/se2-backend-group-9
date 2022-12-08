@@ -107,7 +107,7 @@ test('POST /authenticate returns error if username is incorrect', async t => {
   t.is(data.status, 401);
 });
 
-// /* Test for paswword reset if user types wrong username
+// /* Test for pasword reset if user types wrong username*/
 // test('POST /resetpassword reset password with wrong username', async t => {
 
 //   //change to secrets
@@ -115,12 +115,12 @@ test('POST /authenticate returns error if username is incorrect', async t => {
 //   const username = 'dummmmy';
 
 //   const data = await t.context.got.post(`/resetpassword`, {
-//         json: { username }
-//       }).json();
+//     json: { username }
+//   }).json();
 //   t.is(data.status, 404);
-// })*/
+// });
 
-// /*Test for paswword change if user types wrong username
+// /* Test for paswword change if user types wrong username*/
 // test('POST /changepassword change password with wrong username', async t => {
 
 //   //change to secrets
@@ -129,14 +129,14 @@ test('POST /authenticate returns error if username is incorrect', async t => {
 //   const password = '123456789';
 
 //   const data = await t.context.got.post(`users/changepassword`, {
-//         json: { username, password }
-//       }).json();
+//     json: { username, password }
+//   }).json();
 //   t.is(data.status, 404);
-// })*/
+// });
 
 /*
 Test for the response and status code of get dashboards
-Returns all the dashboards of a user and then deletes them
+Returns all the dashboards of a user
 */
 test('GET /dashboards returns correct response and status code', async (t) => {
   const token = authToken;
@@ -144,7 +144,7 @@ test('GET /dashboards returns correct response and status code', async (t) => {
 
   t.assert(body.success);
   t.is(statusCode, 200);
-  console.log(body.dashboards);
+  //console.log(body.dashboards);
 });
 
 /*
@@ -154,7 +154,7 @@ test('GET /dashboards returns correct response and status code', async (t) => {
 */
 test('POST /create-dashboard returns correct response or status code', async t => {
   const token = authToken;
-  const name = 'dummyDashboard0';
+  const name = 'dummyDashboard';
 
   const body = await t.context.got.post(`dashboards/create-dashboard?token=${token}`, {
     json: { name }
@@ -172,7 +172,7 @@ test('POST /create-dashboard returns correct response or status code', async t =
 
 /*
   Test for post request delete-dashboard,
-  returns success=true if dashboard with that name exists
+  returns success=true if dashboard with that id exists
   else it returs status code = 409
 */
 test('POST /delete-dashboard returns correct response or status code', async t => {
@@ -199,7 +199,7 @@ test('POST /delete-dashboard returns correct response or status code', async t =
 */
 test('GET /dashboard returns correct response', async t => {
   const token = authToken;
-  const id = '6390be757de6d2fa567a3e34';
+  const id = dashboard0ID;
 
   const { body, statusCode } = await t.context.got(`dashboards/dashboard?token=${token}&id=${id}`);
 
@@ -235,4 +235,29 @@ test('GET /dashboard returns error status code if id is incorrect', async t => {
     t.is(statusCode, 200);
     t.is(body.dashboard.name, 'dummyDashboard0');
   }
+});
+
+/*
+  Test for post request delete-dashboard,
+  returns success=true if dashboard with that id exists
+  else if dashboard id is incorrect it returns status code = 409
+*/
+test('POST /save-dashboard returns correct response and status code', async t => {
+  const token = authToken;
+  const id = dashboard0ID;
+  const layout = [];
+  const items = {};
+  const nextId = 3;
+
+  const body = await t.context.got.post(`dashboards/save-dashboard?token=${token}`, {
+    json: { id, layout, items, nextId }
+  }).json();
+  t.assert(body.success);
+
+  const wrongID = wrongdashID;
+  const body2 = await t.context.got.post(`dashboards/save-dashboard?token=${token}`, {
+    json: { wrongID, layout, items, nextId }
+  }).json();
+
+  t.is(body2.status, 409);
 });
