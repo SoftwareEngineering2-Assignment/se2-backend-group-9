@@ -10,11 +10,11 @@ const app = require('../src/index');
 const { jwtSign } = require('../src/utilities/authentication/helpers');
 const { AssertionError } = require('node:assert');
 const { isAsyncFunction } = require('node:util/types');
+const authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImR1bW15IiwiaWQiOiI2MzhlNDA5MTMxMmRiMTRjNmVjMzBlNmYiLCJlbWFpbCI6ImR1bW15QGdtYWlsLmNvbSIsImlhdCI6MTY3MDQxNjE5M30.g4hEfpH6EoN5JaBUU-O67uv4v9nUIiWtpHCLA3_cSSg';
 const dashboard0ID = '6391d8972c8c733c64857525';
 const wrongdashID = '6390be757de6d2fa567a3e34';
 
 require('dotenv').config(app.env);
-const authToken = app.env.AUTH_TOKEN;
 //console.log(process.env);
 
 /* 
@@ -45,6 +45,7 @@ test('GET /statistics returns correct response and status code', async (t) => {
   t.is(statusCode, 200);
 });
 
+/*Test for the response and status code of get sources*/
 test('GET /sources returns correct response and status code', async (t) => {
   const token = authToken;
   const { body, statusCode } = await t.context.got(`sources/sources?token=${token}`);
@@ -64,7 +65,7 @@ test('POST /create returns error if email or user exists', async t => {
   t.is(body.status, 409);
 });
 
-/*Test for post request for authenticating a user with username and password*/
+/*Test for post request for authenticating a user with correct username and password*/
 test('POST /authenticate returns correct username', async t => {
   const username = 'dummy';
   const password = '12345678';
@@ -76,33 +77,33 @@ test('POST /authenticate returns correct username', async t => {
   t.is(body.user.username, username);
 });
 
-// /*Test for user authentication if password is wrong (post) */
-// test('POST /authenticate a dummy user with wrong pasword', async t => {
+/*Test for user authentication if password is wrong (post) */
+test('POST /authenticate returns error if pasword is incorrect', async t => {
 
-//   //change to secrets
+  //change to secrets
 
-//   const username = 'dummy';
-//   const password = '135790';
+  const username = 'dummy';
+  const password = '135790';
 
-//   const data = await t.context.got.post(`users/authenticate`, {
-//     json: { username, password }
-//   }).json();
-//   t.is(data.status, 401);
-// });
+  const data = await t.context.got.post(`users/authenticate`, {
+    json: { username, password }
+  }).json();
+  t.is(data.status, 401);
+});
 
-// /*Test for user authentication if username is wrong (post) */
-// test('POST /authenticate a dummy user with wrong username', async t => {
+/*Test for user authentication if username is wrong (post) */
+test('POST /authenticate returns error if username is incorrect', async t => {
 
-//   //change to secrets
+  //change to secrets
 
-//   const username = 'dummmmy';
-//   const password = '123456789';
+  const username = 'dummmmy';
+  const password = '123456789';
 
-//   const data = await t.context.got.post(`users/authenticate`, {
-//     json: { username, password }
-//   }).json();
-//   t.is(data.status, 401);
-// });
+  const data = await t.context.got.post(`users/authenticate`, {
+    json: { username, password }
+  }).json();
+  t.is(data.status, 401);
+});
 
 // /* Test for paswword reset if user types wrong username
 // test('POST /resetpassword reset password with wrong username', async t => {
@@ -143,7 +144,6 @@ test('GET /dashboards returns correct response and status code', async (t) => {
 
   t.assert(body.success);
   t.is(statusCode, 200);
-  //console.log(body.dashboards);
 });
 
 /*
