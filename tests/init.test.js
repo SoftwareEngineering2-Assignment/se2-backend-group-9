@@ -10,11 +10,11 @@ const app = require('../src/index');
 const { jwtSign } = require('../src/utilities/authentication/helpers');
 const { AssertionError } = require('node:assert');
 const { isAsyncFunction } = require('node:util/types');
-const authToken = AUTH_TOKEN;
 const dashboard0ID = '6391d8972c8c733c64857525';
 const wrongdashID = '6390be757de6d2fa567a3e34';
 
 require('dotenv').config(app.env);
+const authToken = AUTH_TOKEN;
 //console.log(process.env);
 
 /* 
