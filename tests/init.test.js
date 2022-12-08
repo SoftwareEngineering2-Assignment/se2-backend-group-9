@@ -142,6 +142,7 @@ test('GET /dashboards returns correct response and status code', async (t) => {
 
   t.assert(body.success);
   t.is(statusCode, 200);
+  console.log(body.dashboards);
 });
 
 /*
