@@ -14,6 +14,7 @@ jobs:
       SERVER_URI: 'http://localhost:3000'
       SERVER_EMAIL: 'karanikio@auth.gr'
       SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+      AUTH_TOKEN: ${{ secrets.DUMMY_AUTH_TOKEN }}
     
     runs-on: ubuntu-latest
     steps:
