@@ -1,5 +1,4 @@
 /* eslint-disable import/no-unresolved */
-//require('dotenv').config();
 
 const http = require('node:http');
 const test = require('ava').default;
@@ -11,10 +10,9 @@ const { jwtSign } = require('../src/utilities/authentication/helpers');
 const { AssertionError } = require('node:assert');
 const { isAsyncFunction } = require('node:util/types');
 const authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImR1bW15IiwiaWQiOiI2MzhlNDA5MTMxMmRiMTRjNmVjMzBlNmYiLCJlbWFpbCI6ImR1bW15QGdtYWlsLmNvbSIsImlhdCI6MTY3MDQxNjE5M30.g4hEfpH6EoN5JaBUU-O67uv4v9nUIiWtpHCLA3_cSSg';
-const dashboard0ID = '6390be757de6d2fa567a3e34';
 
 require('dotenv').config(app.env);
-console.log(process.env);
+//console.log(process.env);
 
 /* 
 dummy user variables for tests
@@ -26,12 +24,14 @@ const authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImR1bW15
 const dashboard0ID = '6390be757de6d2fa567a3e34';
 */
 
+/* Method for initializing server for tests */
 test.before(async (t) => {
   t.context.server = http.createServer(app);
   t.context.prefixUrl = await listen(t.context.server);
   t.context.got = got.extend({ http2: true, throwHttpErrors: false, responseType: 'json', prefixUrl: t.context.prefixUrl });
 });
 
+/* Method for closing the test server */
 test.after.always((t) => {
   t.context.server.close();
 });
@@ -44,6 +44,7 @@ test('GET /statistics returns correct response and status code', async (t) => {
   t.is(statusCode, 200);
 });
 
+/*Test for the response and status code of get sources */
 test('GET /sources returns correct response and status code', async (t) => {
   const token = authToken;
   const { body, statusCode } = await t.context.got(`sources/sources?token=${token}`);
@@ -64,7 +65,7 @@ test('POST /create returns error if email or user exists', async t => {
 });
 
 /*Test for post request for authenticating a user with username and password*/
-test('POST /authenticate returns correct username', async t => {
+test('POST /authenticate returns correct username and password', async t => {
   const username = 'dummy';
   const password = '12345678';
 
@@ -75,33 +76,33 @@ test('POST /authenticate returns correct username', async t => {
   t.is(body.user.username, username);
 });
 
-// /*Test for user authentication if password is wrong (post) */
-// test('POST /authenticate a dummy user with wrong pasword', async t => {
+/*Test for user authentication if password is wrong (post) */
+test('POST /authenticate returns error if pasword is incorrect', async t => {
 
-//   //change to secrets
+  //change to secrets
 
-//   const username = 'dummy';
-//   const password = '135790';
+  const username = 'dummy';
+  const password = '135790';
 
-//   const data = await t.context.got.post(`users/authenticate`, {
-//     json: { username, password }
-//   }).json();
-//   t.is(data.status, 401);
-// });
+  const data = await t.context.got.post(`users/authenticate`, {
+    json: { username, password }
+  }).json();
+  t.is(data.status, 401);
+});
 
-// /*Test for user authentication if username is wrong (post) */
-// test('POST /authenticate a dummy user with wrong username', async t => {
+/*Test for user authentication if username is wrong (post) */
+test('POST /authenticate returns error if username is incorrect', async t => {
 
-//   //change to secrets
+  //change to secrets
 
-//   const username = 'dummmmy';
-//   const password = '123456789';
+  const username = 'dummmmy';
+  const password = '123456789';
 
-//   const data = await t.context.got.post(`users/authenticate`, {
-//     json: { username, password }
-//   }).json();
-//   t.is(data.status, 401);
-// });
+  const data = await t.context.got.post(`users/authenticate`, {
+    json: { username, password }
+  }).json();
+  t.is(data.status, 401);
+});
 
 // /* Test for paswword reset if user types wrong username
 // test('POST /resetpassword reset password with wrong username', async t => {
@@ -115,8 +116,6 @@ test('POST /authenticate returns correct username', async t => {
 //       }).json();
 //   t.is(data.status, 404);
 // })*/
-
-
 
 // /*Test for paswword change if user types wrong username
 // test('POST /changepassword change password with wrong username', async t => {
@@ -133,7 +132,7 @@ test('POST /authenticate returns correct username', async t => {
 // })*/
 
 /*
-Test for the response and status code of get dashboards (get)
+Test for the response and status code of get dashboards
 Returns all the dashboards of a user and then deletes them
 */
 test('GET /dashboards returns correct response and status code', async (t) => {
@@ -142,6 +141,7 @@ test('GET /dashboards returns correct response and status code', async (t) => {
 
   t.assert(body.success);
   t.is(statusCode, 200);
+  console.log(body.dashboards);
 });
 
 /*
@@ -151,7 +151,7 @@ test('GET /dashboards returns correct response and status code', async (t) => {
 */
 test('POST /create-dashboard returns correct response or status code', async t => {
   const token = authToken;
-  const name = 'dummyDashboard';
+  const name = 'dummyDashboard0';
 
   const body = await t.context.got.post(`dashboards/create-dashboard?token=${token}`, {
     json: { name }
@@ -196,7 +196,7 @@ test('POST /delete-dashboard returns correct response or status code', async t =
 */
 test('GET /dashboard returns correct response', async t => {
   const token = authToken;
-  const id = dashboard0ID;
+  const id = '6390be757de6d2fa567a3e34';
 
   const { body, statusCode } = await t.context.got(`dashboards/dashboard?token=${token}&id=${id}`);
 
