@@ -143,7 +143,7 @@ test('GET /dashboards returns correct response and status code', async (t) => {
 
   t.assert(body.success);
   t.is(statusCode, 200);
-  console.log(body.dashboards);
+  //console.log(body.dashboards);
 });
 
 /*
@@ -227,7 +227,6 @@ test('GET /dashboard returns error status code if id is incorrect', async t => {
   //if body.status != undefined means that the selected dashboard has not been found
   if (body.status) {
     t.is(body.status, 409);
-    console.log(body.status);
   }
   //if body.status == undefined then dashboard was found
   else {
