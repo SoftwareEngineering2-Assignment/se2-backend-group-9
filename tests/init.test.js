@@ -194,7 +194,7 @@ test('POST /delete-dashboard returns correct response or status code', async t =
 
 /*
   Test for get request /dashboard,
-  returns success=true because dashboard with that name exists
+  returns success=true because dashboard with that id exists
 */
 test('GET /dashboard returns correct response', async t => {
   const token = authToken;
@@ -216,9 +216,9 @@ test('GET /dashboard returns correct response', async t => {
 
 /*
   Test for get request /dashboard,
-  returns success=true because dashboard with that name exists
+  returns status code = 409 because dashboard with that id doesn't exists
 */
-test('GET /dashboard returns correct response', async t => {
+test('GET /dashboard returns error status code if id is incorrect', async t => {
   const token = authToken;
   const id = wrongdashID;
 
