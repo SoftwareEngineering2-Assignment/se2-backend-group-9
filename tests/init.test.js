@@ -134,7 +134,7 @@ test('POST /authenticate returns correct username', async t => {
   }).json();
 
   //console.log(body);
-  t.is(body.user.username, 'dummy3');
+  t.is(body.user.username, 'dummy2');
 });
 
 /*Test for user authentication if password is wrong (post) */
