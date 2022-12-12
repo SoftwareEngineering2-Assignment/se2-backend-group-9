@@ -181,20 +181,21 @@ test('POST /changepassword change password of a logged in user while the token e
   t.is(data.status, 410);
 });
 
-/*Test for paswword change while the reset token expired for a logged in user
-test('POST /changepassword change password of a logged in user ', async t => {
+// /*Test for paswword change while the reset token expired for a logged in user*/
+// test('POST /changepassword change password of a logged in user ', async t => {
 
-  //change to secrets
-  const username = 'dummy';
-  const password = '123456789';
-  const token = authToken;
+//   //change to secrets
+//   const username = 'dummy';
+//   const password = '123456789';
+//   const token = authToken;
 
 
-  const data = await t.context.got.post(`users/changepassword?token=${token}`, {
-    json: { username, password }
-  }).json();
-  t.is(data.ok, true);
-});*/
+//   const data = await t.context.got.post(`users/changepassword?token=${token}`, {
+//     json: { username, password }
+//   }).json();
+//   t.is(data.ok, true);
+// });
+
 
 /*
 Test for the response and status code of get dashboards
