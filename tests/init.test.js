@@ -143,32 +143,58 @@ test('POST /authenticate returns error if username is incorrect', async t => {
   t.is(data.status, 401);
 });
 
-// /* Test for pasword reset if user types wrong username*/
-// test('POST /resetpassword reset password with wrong username', async t => {
+test('POST request to reset password with wrong username', async (t) => {
+  const username = 'dummmmy';
 
-//   //change to secrets
+  const data = await t.context.got.post(`users/resetpassword`, {
+    json: { username}
+  }).json();
+  t.is(data.status, 404);
 
-//   const username = 'dummmmy';
+});
 
-//   const data = await t.context.got.post(`/resetpassword`, {
-//     json: { username }
-//   }).json();
-//   t.is(data.status, 404);
-// });
+/*Test for password reset with existing username*/
+test('POST request to reset password with true username', async (t) => {
+  const username = 'dummy';
+  const email = 'dummy@gmail.com'
 
-// /* Test for paswword change if user types wrong username*/
-// test('POST /changepassword change password with wrong username', async t => {
+  const data = await t.context.got.post(`users/resetpassword`, {
+    json: { username , email }
+  }).json();
+  t.is(data.ok,true);
 
-//   //change to secrets
+});
 
-//   const username = 'dummy';
-//   const password = '123456789';
 
-//   const data = await t.context.got.post(`users/changepassword`, {
-//     json: { username, password }
-//   }).json();
-//   t.is(data.status, 404);
-// });
+ /*Test for paswword change while the reset token expired for a logged in user*/
+test('POST /changepassword change password of a logged in user while the token expired', async t => {
+
+  //change to secrets
+  const username = 'dummmy';
+  const password = '123456789';
+  const token = authToken;
+
+
+  const data = await t.context.got.post(`users/changepassword?token=${token}`, {
+    json: { username, password }
+  }).json();
+  t.is(data.status, 410);
+});
+
+/*Test for paswword change while the reset token expired for a logged in user*/
+test('POST /changepassword change password of a logged in user ', async t => {
+
+  //change to secrets
+  const username = 'dummy';
+  const password = '123456789';
+  const token = authToken;
+
+
+  const data = await t.context.got.post(`users/changepassword?token=${token}`, {
+    json: { username, password }
+  }).json();
+  t.is(data.ok, true);
+});
 
 /*
 Test for the response and status code of get dashboards
