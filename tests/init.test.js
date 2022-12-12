@@ -1,6 +1,8 @@
 /* eslint-disable import/no-unresolved */
 
 const app = require('../src/index');
+const test = require('ava').default;
+const got = require('got');
 const { jwtSign } = require('../src/utilities/authentication/helpers');
 const { AssertionError } = require('node:assert');
 const { isAsyncFunction } = require('node:util/types');
