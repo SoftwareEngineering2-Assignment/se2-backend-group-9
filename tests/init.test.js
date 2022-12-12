@@ -181,7 +181,7 @@ test('POST /changepassword change password of a logged in user while the token e
   t.is(data.status, 410);
 });
 
-/*Test for paswword change while the reset token expired for a logged in user*/
+/*Test for paswword change while the reset token expired for a logged in user
 test('POST /changepassword change password of a logged in user ', async t => {
 
   //change to secrets
@@ -194,7 +194,7 @@ test('POST /changepassword change password of a logged in user ', async t => {
     json: { username, password }
   }).json();
   t.is(data.ok, true);
-});
+});*/
 
 /*
 Test for the response and status code of get dashboards
