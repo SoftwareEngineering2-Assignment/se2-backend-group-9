@@ -10,7 +10,6 @@ const { jwtSign } = require('../src/utilities/authentication/helpers');
 const { AssertionError } = require('node:assert');
 const { isAsyncFunction } = require('node:util/types');
 const authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImR1bW15IiwiaWQiOiI2MzhlNDA5MTMxMmRiMTRjNmVjMzBlNmYiLCJlbWFpbCI6ImR1bW15QGdtYWlsLmNvbSIsImlhdCI6MTY3MDQxNjE5M30.g4hEfpH6EoN5JaBUU-O67uv4v9nUIiWtpHCLA3_cSSg';
-
 const dashboard0ID = '6391d8972c8c733c64857525';
 const wrongdashID = '6390be757de6d2fa567a3e34';
 
@@ -93,20 +92,28 @@ test('GET /sources returns correct response and status code', async (t) => {
 
 /*Test for post request of register account with existing or user or email */
 test('POST /create returns error if email or user exists', async t => {
-  const username = 'dummy';
-  const password = '12345678';
-  const email = 'dummy@gmail.com';
+  test('POST /create returns error if email or user exists', async t => {
+    const username = 'dummy';
+    const password = '12345678';
+    const email = 'dummy@gmail.com';
 
-  const body = await t.context.got.post(`users/create`, {
-    json: { username, password, email }
-  }).json();
-  t.is(body.status, 409);
-});
+    const body = await t.context.got.post(`users/create`, {
+      json: { username, password, email }
+    }).json();
+    t.is(body.status, 409);
+  });
 
-/*Test for post request for authenticating a user with correct username and password*/
-test('POST /authenticate returns correct username', async t => {
-  const username = 'dummy';
-  const password = '12345678';
+  /*Test for post request for authenticating a user with correct username and password*/
+  test('POST /authenticate returns correct username', async t => {
+    const username = 'dummy';
+    const password = '12345678';
+
+    const body = await t.context.got.post('users/authenticate', {
+      json: { username, password }
+    }).json();
+
+    t.is(body.user.username, username);
+  });
 
   const body = await t.context.got.post('users/authenticate', {
     json: { username, password }
@@ -118,26 +125,39 @@ test('POST /authenticate returns correct username', async t => {
 /*Test for user authentication if password is wrong (post) */
 test('POST /authenticate returns error if pasword is incorrect', async t => {
 
-  //change to secrets
+  test('POST /authenticate returns error if pasword is incorrect', async t => {
 
-  const username = 'dummy';
-  const password = '135790';
+    //change to secrets
 
-  const data = await t.context.got.post(`users/authenticate`, {
+
+    const username = 'dummy';
+    const password = '135790';
+
+
+    const data = await t.context.got.post(`users/authenticate`, {
+      json: { username, password }
+    }).json();
     json: { username, password }
   }).json();
   t.is(data.status, 401);
+});
 });
 
 /*Test for user authentication if username is wrong (post) */
 test('POST /authenticate returns error if username is incorrect', async t => {
 
-  //change to secrets
+  test('POST /authenticate returns error if username is incorrect', async t => {
 
-  const username = 'dummmmy';
-  const password = '123456789';
+    //change to secrets
 
-  const data = await t.context.got.post(`users/authenticate`, {
+
+    const username = 'dummmmy';
+    const password = '123456789';
+
+
+    const data = await t.context.got.post(`users/authenticate`, {
+      json: { username, password }
+    }).json();
     json: { username, password }
   }).json();
   t.is(data.status, 401);
@@ -215,41 +235,11 @@ test('POST /delete-dashboard returns correct response or status code', async t =
   const token = authToken;
   const id = '6390b90c470d3fe4ca04063c';
 
-  const body = await t.context.got.post(`dashboards/delete-dashboard?token=${token}`, {
-    json: { id }
+  const data = await t.context.got.post(`/resetpassword`, {
+    json: { username }
   }).json();
-
-  //if body.status != undefined means that the selected dashboard has not been found
-  if (body.status) {
-    t.is(body.status, 409);
-  }
-  //if body.status == undefined then dashboard was found and deleted
-  else {
-    t.assert(body.success);
-  }
-});
-
-/*
-  Test for get request /dashboard,
-  returns success=true because dashboard with that id exists
-*/
-test('GET /dashboard returns correct response', async t => {
-  const token = authToken;
-  const id = dashboard0ID;
-
-  const { body, statusCode } = await t.context.got(`dashboards/dashboard?token=${token}&id=${id}`);
-
-  //if body.status != undefined means that the selected dashboard has not been found
-  if (body.status) {
-    t.is(body.status, 409);
-  }
-  //if body.status == undefined then dashboard was found
-  else {
-    t.assert(body.success);
-    t.is(statusCode, 200);
-    t.is(body.dashboard.name, 'dummyDashboard0');
-  }
-});
+  t.is(data.status, 404);
+}) * /
 
 /*
   Test for get request /dashboard,
