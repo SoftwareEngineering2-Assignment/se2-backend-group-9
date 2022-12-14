@@ -17,11 +17,11 @@ const { AssertionError } = require('node:assert');
 
 require('dotenv').config(app.env);
 
-const authToken1 = app.env.AUTHTOKEN1;
-const authToken2 = app.env.AUTHTOKEN2;
+const authToken1 = process.env.AUTHTOKEN1;
+const authToken2 = process.env.AUTHTOKEN2;
 
-const dashboard0ID = app.env.DASHBOARD0ID; //belongs to dummy_user2
-const wrongdashID = app.env.WRONGDASHID;
+const dashboard0ID = process.env.DASHBOARD0ID; //belongs to dummy_user2
+const wrongdashID = process.env.WRONGDASHID;
 
 //console.log(process.env);
 
