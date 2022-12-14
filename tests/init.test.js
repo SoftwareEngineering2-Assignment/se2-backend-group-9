@@ -182,19 +182,19 @@ test('POST /changepassword change password of a logged in user while the token e
 });
 
 
- /* Test for password change if user types wrong username*/
- test('POST /changepassword change password with wrong username', async t => {
+//  /* Test for password change if user types wrong username*/
+//  test('POST /changepassword change password with wrong username', async t => {
 
-   const username = 'dummmmy';
-   const password = '123456789';
-   const token = authToken2;
+//    const username = 'dummmmy';
+//    const password = '123456789';
+//    const token = authToken2;
 
 
-   const data = await t.context.got.post(`users/changepassword?token=${token}`, {
-     json: { username, password }
-   }).json();
-   t.is(data.status, 404);
- });
+//    const data = await t.context.got.post(`users/changepassword?token=${token}`, {
+//      json: { username, password }
+//    }).json();
+//    t.is(data.status, 404);
+//  });
 
  /* Test for password change if user is logged in with true username and password*/
 //  test('POST /changepassword change password with legit username', async t => {
