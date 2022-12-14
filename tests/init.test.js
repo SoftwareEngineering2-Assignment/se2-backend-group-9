@@ -174,12 +174,12 @@ test('POST /changepassword change password of a logged in user while the token e
     const token = authToken1;
   
   
-    const data = await t.context.got.post(`users/changepassword?token=${token}`, {
+    const body = await t.context.got.post(`users/changepassword?token=${token}`, {
       json: { username, password }
     }).json();
   
-    console.log(data)
-    t.is(data.status, 410);
+    console.log(body)
+    t.is(body.status, 410);
 });
 
 
