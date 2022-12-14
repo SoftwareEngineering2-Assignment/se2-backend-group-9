@@ -8,7 +8,7 @@ const listen = require('test-listen');
 const app = require('../src/index');
 const { jwtSign } = require('../src/utilities/authentication/helpers');
 const { AssertionError } = require('node:assert');
-const { isAsyncFunction } = require('node:util/types');
+//const { isAsyncFunction } = require('node:util/types');
 
 require('dotenv').config(app.env);
 //console.log(process.env);
