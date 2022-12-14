@@ -178,6 +178,7 @@ test('POST /changepassword change password of a logged in user while the token e
       json: { username, password }
     }).json();
   
+    console.log(data)
     t.is(data.status, 410);
 });
 
