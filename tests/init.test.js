@@ -202,7 +202,7 @@ test('POST /changepassword change password of a logged in user while the token e
 });
 
 
- /* Test for paswword change if user types wrong username*/
+ /* Test for password change if user types wrong username*/
  test('POST /changepassword change password with wrong username', async t => {
 
    //change to secrets
@@ -218,7 +218,7 @@ test('POST /changepassword change password of a logged in user while the token e
    t.is(data.status, 404);
  });
 
- /* Test for paswword change if user is logged in with true username and password*/
+ /* Test for password change if user is logged in with true username and password*/
 //  test('POST /changepassword change password with legit username', async t => {
 
 //   //change to secrets
@@ -245,7 +245,7 @@ test('GET /dashboards returns correct response and status code', async (t) => {
 
   t.assert(body.success);
   t.is(statusCode, 200);
-  console.log(body.dashboards);
+  //console.log(body.dashboards);
 });
 
 /*
