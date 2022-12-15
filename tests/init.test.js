@@ -335,7 +335,7 @@ test('POST /save-dashboard returns correct response and status code', async t =>
 test('GET /sources returns correct response and status code', async (t) => {
   const token = authToken2;
   const { body, statusCode } = await t.context.got(`sources/sources?token=${token}`);
-  console.log(body);
+  //console.log(body);
   t.is(statusCode, 200);
   t.assert(body.success);
 });
