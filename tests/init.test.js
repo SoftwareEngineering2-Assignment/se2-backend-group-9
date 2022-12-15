@@ -101,18 +101,15 @@ test('POST /create returns error if email or user exists', async t => {
 
 /*Test for post request for authenticating a user with correct username and password*/
 test('POST /authenticate returns correct username', async t => {
-//   const username = 'dummy2';
-//   const password = dummypass2;
-  
-  const username = 'dummy';
-  const password = '123456789';
+  const username = 'dummy2';
+  const password = dummypass2;
 
   const body = await t.context.got.post('users/authenticate', {
     json: { username, password }
   }).json();
 
-  console.log(body);
-  t.is(body.user.username, 'dummy');
+  //console.log(body);
+  t.is(body.user.username, 'dummy2');
 });
 
 /*Test for user authentication if password is wrong (post) */
