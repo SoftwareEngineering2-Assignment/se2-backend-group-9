@@ -157,20 +157,20 @@ test('POST /request to reset password with true username', async (t) => {
   t.is(data.ok, true);
 });
 
-// /*Test for password change while the reset token expired for a logged in user*/
-// test('POST /changepassword change password of a logged in user while the token expired', async t => {
+/*Test for password change while the reset token expired for a logged in user*/
+test('POST /changepassword change password of a logged in user while the token expired', async t => {
 
-//   const username = 'dummy';
-//   const password = '123456789';
-//   const token = authToken1;
+  const username = 'dummy';
+  const password = '123456789';
+  const token = authToken1;
 
-//   const data = await t.context.got.post(`users/changepassword?token=${token}`, {
-//     json: { username, password }
-//   }).json();
+  const data = await t.context.got.post(`users/changepassword?token=${token}`, {
+    json: { username, password }
+  }).json();
 
-//   console.log(data);
-//   t.is(data.status, 410);
-// });
+  console.log(data);
+  t.is(data.status, 410);
+});
 
 
 //  /* Test for password change if user types wrong username*/
