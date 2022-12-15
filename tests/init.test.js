@@ -9,32 +9,15 @@ const app = require('../src/index');
 const { jwtSign } = require('../src/utilities/authentication/helpers');
 const { AssertionError } = require('node:assert');
 //const { isAsyncFunction } = require('node:util/types');
-const authToken1 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImR1bW15IiwiaWQiOiI2MzhlNDA5MTMxMmRiMTRjNmVjMzBlNmYiLCJlbWFpbCI6ImR1bW15QGdtYWlsLmNvbSIsImlhdCI6MTY3MDQxNjE5M30.g4hEfpH6EoN5JaBUU-O67uv4v9nUIiWtpHCLA3_cSSg';
-const authToken2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImR1bW15MiIsImlkIjoiNjM4ZTRiM2QwNjE4ZTIyMTZjMGFjODMzIiwiZW1haWwiOiJkdW1teTJAZ21haWwuY29tIiwiaWF0IjoxNjcwODU1MTc5fQ.yHEuC1ssqKy0YUumB4G_krPZHwSFCviSE55MaJweWeA';
-
-const dashboard0ID = '63973c77b28f93494ec19fa3'; //belongs to dummy_user2
-const wrongdashID = '6390be757de6d2fa567a3e34';
 
 require('dotenv').config(app.env);
 //console.log(process.env);
 
-/* 
-dummy users variables for tests explained
-
-# dummy_2 must not be changed!
-
-username1 = 'dummy'
-password1 = '?' #we dont know because we reset it every time
-email1 = 'dummy@gmail.com'
-authToken1 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImR1bW15IiwiaWQiOiI2MzhlNDA5MTMxMmRiMTRjNmVjMzBlNmYiLCJlbWFpbCI6ImR1bW15QGdtYWlsLmNvbSIsImlhdCI6MTY3MDQxNjE5M30.g4hEfpH6EoN5JaBUU-O67uv4v9nUIiWtpHCLA3_cSSg';
-
-username = 'dummy2';
-password = '12345678';
-email = 'dummy2@gmail.com';
-
-const authToken2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImR1bW15MiIsImlkIjoiNjM4ZTRiM2QwNjE4ZTIyMTZjMGFjODMzIiwiZW1haWwiOiJkdW1teTJAZ21haWwuY29tIiwiaWF0IjoxNjcwODU1MTc5fQ.yHEuC1ssqKy0YUumB4G_krPZHwSFCviSE55MaJweWeA';
-const dashboard0ID = '6390be757de6d2fa567a3e34'; #belongs to user 2
-*/
+const authToken1 = process.env.AUTHTOKEN1;
+const authToken2 = process.env.AUTHTOKEN2;
+const dummypass2 = process.env.DUMMYPASS2;
+const dashboard0ID = '63973c77b28f93494ec19fa3'; //belongs to dummy_user2
+const wrongdashID = '6390be757de6d2fa567a3e34';
 
 /* Method for initializing server for tests */
 test.before(async (t) => {
@@ -103,7 +86,7 @@ test('GET /sources returns correct response and status code', async (t) => {
 /*Test for post request of register account with existing or user or email */
 test('POST /create returns error if email or user exists', async t => {
   const username = 'dummy2';
-  const password = '12345678';
+  const password = dummypass2;
   const email = 'dummy@gmail.com';
 
   const body = await t.context.got.post(`users/create`, {
@@ -115,7 +98,7 @@ test('POST /create returns error if email or user exists', async t => {
 // /*Test for post request of register account with an unused username or email */
 // test('POST /create returns create user with unused email', async t => {
 //   const username = 'dummy3';
-//   const password = '12345678';
+//   const password = dummypass2;
 //   const email = 'dummy3@gmail.com';
 
 //   const body = await t.context.got.post(`users/create`, {
@@ -127,7 +110,7 @@ test('POST /create returns error if email or user exists', async t => {
 /*Test for post request for authenticating a user with correct username and password*/
 test('POST /authenticate returns correct username', async t => {
   const username = 'dummy2';
-  const password = '12345678';
+  const password = dummypass2;
 
   const body = await t.context.got.post('users/authenticate', {
     json: { username, password }
@@ -139,8 +122,6 @@ test('POST /authenticate returns correct username', async t => {
 
 /*Test for user authentication if password is wrong (post) */
 test('POST /authenticate returns error if pasword is incorrect', async t => {
-
-  //change to secrets
 
   const username = 'dummy';
   const password = '135790';
@@ -155,8 +136,6 @@ test('POST /authenticate returns error if pasword is incorrect', async t => {
 /*Test for user authentication if username is wrong (post) */
 test('POST /authenticate returns error if username is incorrect', async t => {
 
-  //change to secrets
-
   const username = 'dummmmy';
   const password = '123456789';
 
@@ -167,7 +146,7 @@ test('POST /authenticate returns error if username is incorrect', async t => {
 });
 
 /*Test for password reset with incorrect username*/
-test('POST request to reset password with wrong username', async (t) => {
+test('POST /request to reset password with wrong username', async (t) => {
   const username = 'dummmmy';
 
   const data = await t.context.got.post(`users/resetpassword`, {
@@ -177,7 +156,7 @@ test('POST request to reset password with wrong username', async (t) => {
 });
 
 /*Test for password reset with existing username*/
-test('POST request to reset password with true username', async (t) => {
+test('POST /request to reset password with true username', async (t) => {
   const username = 'dummy';
   const email = 'dummy@gmail.com'
 
@@ -198,33 +177,30 @@ test('POST /changepassword change password of a logged in user while the token e
     const data = await t.context.got.post(`users/changepassword?token=${token}`, {
       json: { username, password }
     }).json();
+  
     t.is(data.status, 410);
 });
 
 
- /* Test for paswword change if user types wrong username*/
- test('POST /changepassword change password with wrong username', async t => {
+//  /* Test for password change if user types wrong username*/
+//  test('POST /changepassword change password with wrong username', async t => {
 
-   //change to secrets
-
-   const username = 'dummmmy';
-   const password = '123456789';
-   const token = authToken2;
+//    const username = 'dummmmy';
+//    const password = '123456789';
+//    const token = authToken2;
 
 
-   const data = await t.context.got.post(`users/changepassword?token=${token}`, {
-     json: { username, password }
-   }).json();
-   t.is(data.status, 404);
- });
+//    const data = await t.context.got.post(`users/changepassword?token=${token}`, {
+//      json: { username, password }
+//    }).json();
+//    t.is(data.status, 404);
+//  });
 
- /* Test for paswword change if user is logged in with true username and password*/
+ /* Test for password change if user is logged in with true username and password*/
 //  test('POST /changepassword change password with legit username', async t => {
 
-//   //change to secrets
-
 //   const username = 'dummy2';
-//   const password = '12345678';
+//   const password = dummypass2;
 //   const token = authToken2;
 
 
@@ -245,7 +221,7 @@ test('GET /dashboards returns correct response and status code', async (t) => {
 
   t.assert(body.success);
   t.is(statusCode, 200);
-  console.log(body.dashboards);
+  //console.log(body.dashboards);
 });
 
 /*
