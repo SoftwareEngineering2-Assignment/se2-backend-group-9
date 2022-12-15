@@ -172,7 +172,12 @@ test('POST /changepassword change password of a logged in user while the token e
     json: { username, password }
   }).json();
 
-  t.is(data.status, 410);
+  if(data.ok){
+    t.assert(data.ok)
+  }
+  else{
+    t.is(data.status, 410);
+  }
 });
 
 
