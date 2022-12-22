@@ -26,13 +26,13 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Run test1
-        run: npm test1
+        run: npm run test1
       - name: Run test2
-        run: npm test2
+        run: npm run test2
       - name: Run test3
-        run: npm test3
+        run: npm run test3
       - name: Run test4
-        run: npm test4
+        run: npm run test4
 
   cd:
 
