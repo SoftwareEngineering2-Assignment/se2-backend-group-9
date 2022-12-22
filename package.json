@@ -6,8 +6,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node src/index.js",
     "dev": "cross-env NODE_ENV=development nodemon src/index.js",
-    "test1": "c8 ava \"**/test1.test.js\"",
-    "test2": "c8 ava \"**/test2.test.js\"",
+    "tests": "c8 ava \"**/*.test.js\"",
     "lint": "./node_modules/.bin/eslint src"
   },
   "author": "",
