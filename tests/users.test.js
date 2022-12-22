@@ -16,8 +16,6 @@ require('dotenv').config(app.env);
 const authToken1 = process.env.AUTHTOKEN1;
 const authToken2 = process.env.AUTHTOKEN2;
 const dummypass2 = process.env.DUMMYPASS2;
-const dashboard0ID = '63973c77b28f93494ec19fa3'; //belongs to dummy_user2
-const wrongdashID = '6390be757de6d2fa567a3e34';
 
 /* Method for initializing server for tests */
 test.before(async (t) => {
