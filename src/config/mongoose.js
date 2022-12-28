@@ -1,3 +1,6 @@
+/*
+File for mongoose database configuration
+*/
 const mongoose = require('mongoose');
 
 const mongooseOptions = {
@@ -10,7 +13,12 @@ const mongooseOptions = {
   keepAliveInitialDelay: 300000
 };
 const mongodbUri = process.env.MONGODB_URI;
-  
+ 
+/*
+Function for connecting to mongoose database
+Needs mongodbUri, mongooseOptions as inputs
+Exports the connected database as output
+*/
 module.exports = () => {
   // eslint-disable-next-line no-console
   mongoose.connect(mongodbUri, mongooseOptions).catch(console.error);
