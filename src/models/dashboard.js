@@ -51,7 +51,7 @@ const DashboardSchema = new mongoose.Schema(
 
 DashboardSchema.plugin(beautifyUnique);
 
-// Pre save hook that hashes passwords
+// Pre save hook that hashes password
 
 DashboardSchema.pre('save', function (next) {
   if (this.isModified('password')) {
@@ -63,7 +63,11 @@ DashboardSchema.pre('save', function (next) {
   return next();
 });
 
-// Model method that compares hashed passwords
+/**
+  * Model method that compares hashed passwords
+  * need this.password as input
+  * returns true if the two passwords match, else false
+ */
 
 DashboardSchema.methods.comparePassword = function (password) {
   return comparePassword(password, this.password);
