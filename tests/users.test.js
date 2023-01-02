@@ -6,9 +6,6 @@ const got = require('got');
 const listen = require('test-listen');
 
 const app = require('../src/index');
-const { jwtSign } = require('../src/utilities/authentication/helpers');
-const { AssertionError } = require('node:assert');
-//const { isAsyncFunction } = require('node:util/types');
 
 require('dotenv').config(app.env);
 //console.log(process.env);
@@ -123,10 +120,10 @@ test('POST /changepassword change password of a logged in user while the token e
     json: { username, password }
   }).json();
 
-  if(data.ok){
+  if (data.ok) {
     t.assert(data.ok)
   }
-  else{
+  else {
     t.is(data.status, 410);
   }
 });
