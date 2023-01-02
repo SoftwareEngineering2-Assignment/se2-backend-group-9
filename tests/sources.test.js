@@ -14,6 +14,11 @@ require('dotenv').config(app.env);
 //console.log(process.env);
 
 const authToken2 = process.env.AUTHTOKEN2;
+const my_user = {
+  "username": "dummy2",
+  "id": "638e4b3d0618e2216c0ac833",
+  "email": "dummy2@gmail.com"
+};
 
 /* Method for initializing server for tests */
 test.before(async (t) => {
@@ -132,13 +137,30 @@ test('POST /delete-source returns 409 if source not found', async (t) => {
 
 /*
   Test for post request /source,
+  returns success is source is found
+*/
+test('POST /source returns correct response', async (t) => {
+
+  const name = 'source2'; //wrong source name
+  const owner = 'self';
+  const user = my_user;
+
+  const body = await t.context.got.post(`sources/source`, {
+    json: { name, owner, user }
+  }).json();
+
+  t.assert(body.success);
+});
+
+/*
+  Test for post request /source,
   returns 409 if source not found
 */
 test('POST /source returns 409 if source not found', async (t) => {
 
-  const name = 'source2';
+  const name = 'source999'; //wrong source name
   const owner = 'self';
-  const user = 'dummy_user2';
+  const user = my_user;
 
   const body = await t.context.got.post(`sources/source`, {
     json: { name, owner, user }
