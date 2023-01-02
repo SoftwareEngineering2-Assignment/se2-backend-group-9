@@ -1,7 +1,11 @@
+/**
+ * File for describing Schema for reset password feature
+ */
+
 /* eslint-disable func-names */
 const mongoose = require('mongoose');
 const beautifyUnique = require('mongoose-beautiful-unique-validation');
-const {constants: {expires}} = require('../utilities/validation');
+const { constants: { expires } } = require('../utilities/validation');
 
 const ResetSchema = new mongoose.Schema({
   username: {
@@ -18,12 +22,11 @@ const ResetSchema = new mongoose.Schema({
   expireAt: {
     type: Date,
     default: Date.now,
-    index: {expires},
+    index: { expires },
   },
 });
 
 // Plugin for Mongoose that turns duplicate errors into regular Mongoose validation errors.
-
 ResetSchema.plugin(beautifyUnique);
 
 mongoose.pluralize(null);
