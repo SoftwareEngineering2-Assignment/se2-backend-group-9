@@ -6,7 +6,6 @@ const { authorization } = require('../middlewares');
 const router = express.Router();
 
 const Dashboard = require('../models/dashboard');
-const Source = require('../models/source');
 
 router.post('/clone-dashboard',
   authorization,
