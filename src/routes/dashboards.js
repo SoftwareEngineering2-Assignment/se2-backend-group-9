@@ -1,20 +1,19 @@
 /* eslint-disable max-len */
 const express = require('express');
 const mongoose = require('mongoose');
-const { authorization } = require('../middlewares');
+const {authorization} = require('../middlewares');
 
 const router = express.Router();
 
 const Dashboard = require('../models/dashboard');
 const Source = require('../models/source');
-const passwordNeeded = require('../utilities/dashboards/helpers');
 
 router.get('/dashboards',
   authorization,
   async (req, res, next) => {
     try {
-      const { id } = req.decoded;
-      const foundDashboards = await Dashboard.find({ owner: mongoose.Types.ObjectId(id) });
+      const {id} = req.decoded;
+      const foundDashboards = await Dashboard.find({owner: mongoose.Types.ObjectId(id)});
       const dashboards = [];
       foundDashboards.forEach((s) => {
         dashboards.push({
@@ -33,13 +32,13 @@ router.get('/dashboards',
     }
   });
 
-router.post('/create-dashboard',
+router.post('/create-dashboard', 
   authorization,
   async (req, res, next) => {
     try {
-      const { name } = req.body;
-      const { id } = req.decoded;
-      const foundDashboard = await Dashboard.findOne({ owner: mongoose.Types.ObjectId(id), name });
+      const {name} = req.body;
+      const {id} = req.decoded;
+      const foundDashboard = await Dashboard.findOne({owner: mongoose.Types.ObjectId(id), name});
       if (foundDashboard) {
         return res.json({
           status: 409,
@@ -54,38 +53,38 @@ router.post('/create-dashboard',
         owner: mongoose.Types.ObjectId(id)
       }).save();
 
-      return res.json({ success: true });
+      return res.json({success: true});
     } catch (err) {
       return next(err.body);
     }
-  });
+  }); 
 
-router.post('/delete-dashboard',
+router.post('/delete-dashboard', 
   authorization,
   async (req, res, next) => {
     try {
-      const { id } = req.body;
+      const {id} = req.body;
 
-      const foundDashboard = await Dashboard.findOneAndRemove({ _id: mongoose.Types.ObjectId(id), owner: mongoose.Types.ObjectId(req.decoded.id) });
+      const foundDashboard = await Dashboard.findOneAndRemove({_id: mongoose.Types.ObjectId(id), owner: mongoose.Types.ObjectId(req.decoded.id)});
       if (!foundDashboard) {
         return res.json({
           status: 409,
           message: 'The selected dashboard has not been found.'
         });
       }
-      return res.json({ success: true });
+      return res.json({success: true});
     } catch (err) {
       return next(err.body);
     }
-  });
+  }); 
 
 router.get('/dashboard',
   authorization,
   async (req, res, next) => {
     try {
-      const { id } = req.query;
+      const {id} = req.query;
 
-      const foundDashboard = await Dashboard.findOne({ _id: mongoose.Types.ObjectId(id), owner: mongoose.Types.ObjectId(req.decoded.id) });
+      const foundDashboard = await Dashboard.findOne({_id: mongoose.Types.ObjectId(id), owner: mongoose.Types.ObjectId(req.decoded.id)});
       if (!foundDashboard) {
         return res.json({
           status: 409,
@@ -100,12 +99,12 @@ router.get('/dashboard',
       dashboard.items = foundDashboard.items;
       dashboard.nextId = foundDashboard.nextId;
 
-      const foundSources = await Source.find({ owner: mongoose.Types.ObjectId(req.decoded.id) });
+      const foundSources = await Source.find({owner: mongoose.Types.ObjectId(req.decoded.id)});
       const sources = [];
       foundSources.forEach((s) => {
         sources.push(s.name);
       });
-
+    
       return res.json({
         success: true,
         dashboard,
@@ -116,19 +115,19 @@ router.get('/dashboard',
     }
   });
 
-router.post('/save-dashboard',
+router.post('/save-dashboard', 
   authorization,
   async (req, res, next) => {
     try {
-      const { id, layout, items, nextId } = req.body;
+      const {id, layout, items, nextId} = req.body;
 
-      const result = await Dashboard.findOneAndUpdate({ _id: mongoose.Types.ObjectId(id), owner: mongoose.Types.ObjectId(req.decoded.id) }, {
+      const result = await Dashboard.findOneAndUpdate({_id: mongoose.Types.ObjectId(id), owner: mongoose.Types.ObjectId(req.decoded.id)}, {
         $set: {
           layout,
           items,
           nextId
         }
-      }, { new: true });
+      }, {new: true});
 
       if (result === null) {
         return res.json({
@@ -136,19 +135,19 @@ router.post('/save-dashboard',
           message: 'The selected dashboard has not been found.'
         });
       }
-      return res.json({ success: true });
+      return res.json({success: true});
     } catch (err) {
       return next(err.body);
     }
-  });
+  }); 
 
-router.post('/clone-dashboard',
+router.post('/clone-dashboard', 
   authorization,
   async (req, res, next) => {
     try {
-      const { dashboardId, name } = req.body;
+      const {dashboardId, name} = req.body;
 
-      const foundDashboard = await Dashboard.findOne({ owner: mongoose.Types.ObjectId(req.decoded.id), name });
+      const foundDashboard = await Dashboard.findOne({owner: mongoose.Types.ObjectId(req.decoded.id), name});
       if (foundDashboard) {
         return res.json({
           status: 409,
@@ -156,8 +155,8 @@ router.post('/clone-dashboard',
         });
       }
 
-      const oldDashboard = await Dashboard.findOne({ _id: mongoose.Types.ObjectId(dashboardId), owner: mongoose.Types.ObjectId(req.decoded.id) });
-
+      const oldDashboard = await Dashboard.findOne({_id: mongoose.Types.ObjectId(dashboardId), owner: mongoose.Types.ObjectId(req.decoded.id)});
+      
       await new Dashboard({
         name,
         layout: oldDashboard.layout,
@@ -166,32 +165,79 @@ router.post('/clone-dashboard',
         owner: mongoose.Types.ObjectId(req.decoded.id)
       }).save();
 
-      return res.json({ success: true });
+      return res.json({success: true});
     } catch (err) {
       return next(err.body);
     }
-  });
+  }); 
 
-router.post('/check-password-needed',
+router.post('/check-password-needed', 
   async (req, res, next) => {
     try {
-      const { user, dashboardId } = req.body;
+      const {user, dashboardId} = req.body;
       const userId = user.id;
 
-      const foundDashboard = await Dashboard.findOne({ _id: mongoose.Types.ObjectId(dashboardId) }).select('+password');
-      console.log(foundDashboard);
-      passwordNeeded(foundDashboard, res, next);
+      const foundDashboard = await Dashboard.findOne({_id: mongoose.Types.ObjectId(dashboardId)}).select('+password');
+      if (!foundDashboard) {
+        return res.json({
+          status: 409,
+          message: 'The specified dashboard has not been found.'
+        });
+      }
+
+      const dashboard = {};
+      dashboard.name = foundDashboard.name;
+      dashboard.layout = foundDashboard.layout;
+      dashboard.items = foundDashboard.items;
+
+      if (userId && foundDashboard.owner.equals(userId)) {
+        foundDashboard.views += 1;
+        await foundDashboard.save();
+
+        return res.json({
+          success: true,
+          owner: 'self',
+          shared: foundDashboard.shared,
+          hasPassword: foundDashboard.password !== null,
+          dashboard
+        });
+      } 
+      if (!(foundDashboard.shared)) {
+        return res.json({
+          success: true,
+          owner: '',
+          shared: false
+        });
+      }
+      if (foundDashboard.password === null) {
+        foundDashboard.views += 1;
+        await foundDashboard.save();
+
+        return res.json({
+          success: true,
+          owner: foundDashboard.owner,
+          shared: true,
+          passwordNeeded: false,
+          dashboard
+        });
+      }
+      return res.json({
+        success: true,
+        owner: '',
+        shared: true,
+        passwordNeeded: true
+      });
     } catch (err) {
       return next(err.body);
     }
-  });
+  }); 
 
-router.post('/check-password',
+router.post('/check-password', 
   async (req, res, next) => {
     try {
-      const { dashboardId, password } = req.body;
+      const {dashboardId, password} = req.body;
 
-      const foundDashboard = await Dashboard.findOne({ _id: mongoose.Types.ObjectId(dashboardId) }).select('+password');
+      const foundDashboard = await Dashboard.findOne({_id: mongoose.Types.ObjectId(dashboardId)}).select('+password');
       if (!foundDashboard) {
         return res.json({
           status: 409,
@@ -222,16 +268,16 @@ router.post('/check-password',
     } catch (err) {
       return next(err.body);
     }
-  });
+  }); 
 
-router.post('/share-dashboard',
+router.post('/share-dashboard', 
   authorization,
   async (req, res, next) => {
     try {
-      const { dashboardId } = req.body;
-      const { id } = req.decoded;
+      const {dashboardId} = req.body;
+      const {id} = req.decoded;
 
-      const foundDashboard = await Dashboard.findOne({ _id: mongoose.Types.ObjectId(dashboardId), owner: mongoose.Types.ObjectId(id) });
+      const foundDashboard = await Dashboard.findOne({_id: mongoose.Types.ObjectId(dashboardId), owner: mongoose.Types.ObjectId(id)});
       if (!foundDashboard) {
         return res.json({
           status: 409,
@@ -239,7 +285,7 @@ router.post('/share-dashboard',
         });
       }
       foundDashboard.shared = !(foundDashboard.shared);
-
+      
       await foundDashboard.save();
 
       return res.json({
@@ -249,16 +295,16 @@ router.post('/share-dashboard',
     } catch (err) {
       return next(err.body);
     }
-  });
+  }); 
 
-router.post('/change-password',
+router.post('/change-password', 
   authorization,
   async (req, res, next) => {
     try {
-      const { dashboardId, password } = req.body;
-      const { id } = req.decoded;
+      const {dashboardId, password} = req.body;
+      const {id} = req.decoded;
 
-      const foundDashboard = await Dashboard.findOne({ _id: mongoose.Types.ObjectId(dashboardId), owner: mongoose.Types.ObjectId(id) });
+      const foundDashboard = await Dashboard.findOne({_id: mongoose.Types.ObjectId(dashboardId), owner: mongoose.Types.ObjectId(id)});
       if (!foundDashboard) {
         return res.json({
           status: 409,
@@ -266,13 +312,13 @@ router.post('/change-password',
         });
       }
       foundDashboard.password = password;
-
+      
       await foundDashboard.save();
 
-      return res.json({ success: true });
+      return res.json({success: true});
     } catch (err) {
       return next(err.body);
     }
-  });
+  }); 
 
 module.exports = router;
