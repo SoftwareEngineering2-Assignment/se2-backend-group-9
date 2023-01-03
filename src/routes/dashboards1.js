@@ -8,6 +8,11 @@ const router = express.Router();
 const Dashboard = require('../models/dashboard');
 const Source = require('../models/source');
 
+/**
+ * Function for implementing get request for /dashboards/dashboards
+ * Needs authorization
+ * Returns correct response and dashboards found
+ */
 router.get('/dashboards',
   authorization,
   async (req, res, next) => {
@@ -32,6 +37,12 @@ router.get('/dashboards',
     }
   });
 
+/**
+ * Function for implementing post request for /dashboards/create-dashboard
+ * Needs authorization, takes dashboard name as input
+ * Returns correct response if dashboard created
+ * else (409) if dashboard with given name exists
+ */
 router.post('/create-dashboard',
   authorization,
   async (req, res, next) => {
@@ -59,6 +70,12 @@ router.post('/create-dashboard',
     }
   });
 
+/**
+ * Function for implementing post request for /dashboards/delete-dashboard
+ * Needs authorization, takes dashboard id as input
+ * Returns correct response if dashboard deleted
+ * else (409) if dashboard not found
+ */
 router.post('/delete-dashboard',
   authorization,
   async (req, res, next) => {
@@ -78,6 +95,12 @@ router.post('/delete-dashboard',
     }
   });
 
+/**
+ * Function for implementing get request for /dashboards/dashboard
+ * Needs authorization, takes dashboard id as input
+ * Returns correct response, dashboard and its sources if dashboard was found
+ * else (409) if dashboard not found
+ */
 router.get('/dashboard',
   authorization,
   async (req, res, next) => {
@@ -115,6 +138,12 @@ router.get('/dashboard',
     }
   });
 
+/**
+ * Function for implementing post request for /dashboards/save-dashboard
+ * Needs authorization, takes id, layout, items, nextId as inputs
+ * Returns correct response if dashboard saved
+ * else (409) if dashboard not found
+ */
 router.post('/save-dashboard',
   authorization,
   async (req, res, next) => {

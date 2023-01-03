@@ -1,11 +1,14 @@
 /* eslint-disable func-names */
 const mongoose = require('mongoose');
 const beautifyUnique = require('mongoose-beautiful-unique-validation');
-const {passwordDigest, comparePassword} = require('../utilities/authentication/helpers');
-const {constants: {min}} = require('../utilities/validation');
+const { passwordDigest, comparePassword } = require('../utilities/authentication/helpers');
+const { constants: { min } } = require('../utilities/validation');
 
 mongoose.pluralize(null);
 
+/**
+ * Mongoose model for storing user information in a MongoDB database.
+ */
 const UserSchema = new mongoose.Schema(
   {
     email: {
@@ -27,7 +30,7 @@ const UserSchema = new mongoose.Schema(
       select: false,
       minlength: min
     },
-    registrationDate: {type: Number}
+    registrationDate: { type: Number }
   }
 );
 

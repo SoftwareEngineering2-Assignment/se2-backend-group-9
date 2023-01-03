@@ -7,6 +7,12 @@ const router = express.Router();
 
 const Dashboard = require('../models/dashboard');
 
+/**
+ * Function for implementing post request for /dashboards/clone-dashboard
+ * Needs authorization, takes dashboard name and id as inputs
+ * Returns correct response if dashboard cloned
+ * else (409) if dashboard with given name exists
+ */
 router.post('/clone-dashboard',
   authorization,
   async (req, res, next) => {
@@ -37,6 +43,14 @@ router.post('/clone-dashboard',
     }
   });
 
+/**
+ * Function for implementing post request for /dashboards/check-password-needed
+ * Takes user, dashboard id as inputs
+ * Returns (409) if dashboard not found
+ * else returns success, and shared (false) if dashboard not shared and not owned by user
+ * else returns success, owner, shared, passwordNeeded (false), dashboard if shared and password not needed
+ * else returns success, owner, shared, passwordNeeded if password needed
+ */
 router.post('/check-password-needed',
   async (req, res, next) => {
     try {
@@ -56,48 +70,52 @@ router.post('/check-password-needed',
       dashboard.layout = foundDashboard.layout;
       dashboard.items = foundDashboard.items;
 
-      if (userId && foundDashboard.owner.equals(userId)) {
-        foundDashboard.views += 1;
-        await foundDashboard.save();
+      const isOwner = foundDashboard.owner.equals(userId);
+      const isShared = foundDashboard.shared;
+      const hasPassword = !!dashboard.password;
+      const passwordNeeded = hasPassword && !isOwner;
 
-        return res.json({
-          success: true,
-          owner: 'self',
-          shared: foundDashboard.shared,
-          hasPassword: foundDashboard.password !== null,
-          dashboard
-        });
-      }
-      if (!(foundDashboard.shared)) {
+      if (!isShared && !isOwner) {
         return res.json({
           success: true,
           owner: '',
-          shared: false
+          shared: false,
         });
       }
-      if (foundDashboard.password === null) {
-        foundDashboard.views += 1;
-        await foundDashboard.save();
 
+      if (passwordNeeded) {
         return res.json({
           success: true,
-          owner: foundDashboard.owner,
+          //if isOwner == true, return self, else dashboard.owner
+          owner: isOwner ? 'self' : dashboard.owner,
           shared: true,
-          passwordNeeded: false,
-          dashboard
+          passwordNeeded,
         });
       }
+
+      foundDashboard.views += 1;
+      await foundDashboard.save();
+
       return res.json({
         success: true,
-        owner: '',
+        //if isOwner == true, return self, else dashboard.owner
+        owner: isOwner ? 'self' : dashboard.owner,
         shared: true,
-        passwordNeeded: true
+        passwordNeeded,
+        dashboard
       });
     } catch (err) {
       return next(err.body);
     }
   });
 
+/**
+ * Function for implementing post request for /dashboards/check-password
+ * Takes dashboard id and password as inputs
+ * Returns success, correctPassword, owner, dashboard if dashboard found and password is correct
+ * else success, correctPassword (false) if dashboard found but password is not correct
+ * else (409) if dashboard not found
+ */
 router.post('/check-password',
   async (req, res, next) => {
     try {
@@ -136,6 +154,12 @@ router.post('/check-password',
     }
   });
 
+/**
+ * Function for implementing post request for /dashboards/share-dashboard
+ * Needs authorization, takes dashboard id as input
+ * Returns success, shared if dashboard found and dashboard became shared
+ * else (409) if dashboard not found
+ */
 router.post('/share-dashboard',
   authorization,
   async (req, res, next) => {
@@ -163,6 +187,13 @@ router.post('/share-dashboard',
     }
   });
 
+/**
+ * Function for implementing post request for /dashboards/change-password
+ * Needs authorization, takes dashboard id and password as inputs
+ * Returns success if dashboard was found and password changed
+ * else success, correctPassword (false) if dashboard found but password is not correct
+ * else (409) if dashboard not found
+ */
 router.post('/change-password',
   authorization,
   async (req, res, next) => {
