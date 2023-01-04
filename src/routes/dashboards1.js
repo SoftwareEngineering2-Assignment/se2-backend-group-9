@@ -170,4 +170,40 @@ router.post('/save-dashboard',
     }
   });
 
+/**
+* Function for implementing post request for /dashboards/clone-dashboard
+* Needs authorization, takes dashboard name and id as inputs
+* Returns correct response if dashboard cloned
+* else (409) if dashboard with given name exists
+*/
+router.post('/clone-dashboard',
+  authorization,
+  async (req, res, next) => {
+    try {
+      const { dashboardId, name } = req.body;
+
+      const foundDashboard = await Dashboard.findOne({ owner: mongoose.Types.ObjectId(req.decoded.id), name });
+      if (foundDashboard) {
+        return res.json({
+          status: 409,
+          message: 'A dashboard with that name already exists.'
+        });
+      }
+
+      const oldDashboard = await Dashboard.findOne({ _id: mongoose.Types.ObjectId(dashboardId), owner: mongoose.Types.ObjectId(req.decoded.id) });
+
+      await new Dashboard({
+        name,
+        layout: oldDashboard.layout,
+        items: oldDashboard.items,
+        nextId: oldDashboard.nextId,
+        owner: mongoose.Types.ObjectId(req.decoded.id)
+      }).save();
+
+      return res.json({ success: true });
+    } catch (err) {
+      return next(err.body);
+    }
+  });
+
 module.exports = router;
