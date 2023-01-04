@@ -50,10 +50,10 @@ test('GET /test-url returns error status code if url is not valid', async (t) =>
 
 /*Test for the response and status code of get test-url-request */
 test('GET /test-url-request returns correct response and status code', async (t) => {
-  const wrong_url = "https://se2-frontend-9.netlify.app/";
+  const test_url = "https://se2-frontend-9.netlify.app/";
   const type = "GET";
 
-  const { body } = await t.context.got(`general/test-url-request?url=${wrong_url}&type=${type}`);
+  const { body } = await t.context.got(`general/test-url-request?url=${test_url}&type=${type}`);
   t.is(body.status, 200);
 });
 
