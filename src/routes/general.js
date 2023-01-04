@@ -6,6 +6,10 @@ const User = require('../models/user');
 const Dashboard = require('../models/dashboard');
 const Source = require('../models/source');
 
+/**
+ * Function for implementing get request for /general/statistics
+ * Returns success, users, dashboards, views and sources
+ */
 router.get('/statistics',
   async (req, res, next) => {
     try {
@@ -38,6 +42,12 @@ router.get('/statistics',
     }
   });
 
+/**
+ * Function for implementing get request for /general/test-url
+ * Takes url as input
+ * Returns status code and active if ok
+ * else returns (500) and active (false)
+ */
 router.get('/test-url',
   async (req, res) => {
     try {
@@ -55,6 +65,12 @@ router.get('/test-url',
     }
   });
 
+/**
+ * Function for implementing get request for /general/test-url-request
+ * Takes url, type as inputs
+ * Returns status code and response
+ * else returns (500)
+ */
 router.get('/test-url-request',
   async (req, res) => {
     try {
