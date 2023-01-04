@@ -74,22 +74,13 @@ router.post('/check-password-needed',
       if (!isShared && !isOwner) {
         return res.json({
           success: true,
-          owner: '',
           shared: false,
         });
-      }
-
-      if (isOwner) {
-        const owner = 'self'
-      }
-      else {
-        const owner = dashboard.owner;
       }
 
       if (passwordNeeded) {
         return res.json({
           success: true,
-          owner,
           shared: true,
           passwordNeeded,
         });
@@ -100,13 +91,13 @@ router.post('/check-password-needed',
 
       return res.json({
         success: true,
-        owner,
         shared: true,
         passwordNeeded,
         dashboard: {
           name: dashboard.name,
           layout: dashboard.layout,
-          items: dashboard.items
+          items: dashboard.items,
+          owner: dashboard.owner
         }
       });
     } catch (err) {
