@@ -71,11 +71,9 @@ router.post('/check-password-needed',
       dashboard.items = foundDashboard.items;
 
       const isOwner = foundDashboard.owner.equals(userId);
-      const isShared = foundDashboard.shared;
-      const hasPassword = !!dashboard.password;
-      const passwordNeeded = hasPassword && !isOwner;
+      const passwordNeeded = !!dashboard.password && !isOwner;
 
-      if (!isShared && !isOwner) {
+      if (!foundDashboard.shared && !isOwner) {
         return res.json({
           success: true,
           owner: '',
