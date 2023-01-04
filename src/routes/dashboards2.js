@@ -82,7 +82,7 @@ router.post('/check-password-needed',
       if (passwordNeeded) {
         return res.json({
           success: true,
-          owner: isOwner ? 'self' : dashboard.owner,
+          //owner: isOwner ? 'self' : dashboard.owner,
           shared: true,
           passwordNeeded,
         });
@@ -94,7 +94,7 @@ router.post('/check-password-needed',
       return res.json({
         success: true,
         //if isOwner == true, return self, else dashboard.owner
-        owner: isOwner ? 'self' : dashboard.owner,
+        //owner: isOwner ? 'self' : dashboard.owner,
         shared: true,
         passwordNeeded,
         dashboard: {
