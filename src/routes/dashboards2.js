@@ -2,6 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const { authorization } = require('../middlewares');
+const dashboard = require('../models/dashboard');
 
 const router = express.Router();
 
@@ -48,8 +49,8 @@ router.post('/clone-dashboard',
  * Takes user, dashboard id as inputs
  * Returns (409) if dashboard not found
  * else returns success, and shared (false) if dashboard not shared and not owned by user
+ *  else returns success, owner, shared, passwordNeeded if password needed
  * else returns success, owner, shared, passwordNeeded (false), dashboard if shared and password not needed
- * else returns success, owner, shared, passwordNeeded if password needed
  */
 router.post('/check-password-needed',
   async (req, res, next) => {
@@ -65,47 +66,42 @@ router.post('/check-password-needed',
         });
       }
 
-      const dashboard = {};
-      dashboard.name = foundDashboard.name;
-      dashboard.layout = foundDashboard.layout;
-      dashboard.items = foundDashboard.items;
+      const isOwner = dashboard.owner.equals(userId);
+      const isShared = dashboard.shared;
+      const hasPassword = !!dashboard.password;
+      const passwordNeeded = hasPassword && !isOwner;
 
-      if (userId && foundDashboard.owner.equals(userId)) {
-        foundDashboard.views += 1;
-        await foundDashboard.save();
-
-        return res.json({
-          success: true,
-          owner: 'self',
-          shared: foundDashboard.shared,
-          hasPassword: foundDashboard.password !== null,
-          dashboard
-        });
-      }
-      if (!(foundDashboard.shared)) {
+      if (!isShared && !isOwner) {
         return res.json({
           success: true,
           owner: '',
-          shared: false
+          shared: false,
         });
       }
-      if (foundDashboard.password === null) {
-        foundDashboard.views += 1;
-        await foundDashboard.save();
 
+      if (passwordNeeded) {
         return res.json({
           success: true,
-          owner: foundDashboard.owner,
+          owner: isOwner ? 'self' : dashboard.owner,
           shared: true,
-          passwordNeeded: false,
-          dashboard
+          passwordNeeded,
         });
       }
+
+      foundDashboard.views += 1;
+      await foundDashboard.save();
+
       return res.json({
         success: true,
-        owner: '',
+        //if isOwner == true, return self, else dashboard.owner
+        owner: isOwner ? 'self' : dashboard.owner,
         shared: true,
-        passwordNeeded: true
+        passwordNeeded,
+        dashboard: {
+          name: dashboard.name,
+          layout: dashboard.layout,
+          items: dashboard.items
+        }
       });
     } catch (err) {
       return next(err.body);
