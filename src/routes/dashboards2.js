@@ -70,37 +70,42 @@ router.post('/check-password-needed',
       dashboard.layout = foundDashboard.layout;
       dashboard.items = foundDashboard.items;
 
-      const isOwner = foundDashboard.owner.equals(userId);
-      const passwordNeeded = !!dashboard.password && !isOwner;
+      if (userId && foundDashboard.owner.equals(userId)) {
+        foundDashboard.views += 1;
+        await foundDashboard.save();
 
-      if (!foundDashboard.shared && !isOwner) {
+        return res.json({
+          success: true,
+          owner: 'self',
+          shared: foundDashboard.shared,
+          hasPassword: foundDashboard.password !== null,
+          dashboard
+        });
+      }
+      if (!(foundDashboard.shared)) {
         return res.json({
           success: true,
           owner: '',
-          shared: false,
+          shared: false
         });
       }
+      if (foundDashboard.password === null) {
+        foundDashboard.views += 1;
+        await foundDashboard.save();
 
-      if (passwordNeeded) {
         return res.json({
           success: true,
-          //if isOwner == true, return self, else dashboard.owner
-          owner: isOwner ? 'self' : dashboard.owner,
+          owner: foundDashboard.owner,
           shared: true,
-          passwordNeeded,
+          passwordNeeded: false,
+          dashboard
         });
       }
-
-      foundDashboard.views += 1;
-      await foundDashboard.save();
-
       return res.json({
         success: true,
-        //if isOwner == true, return self, else dashboard.owner
-        owner: isOwner ? 'self' : dashboard.owner,
+        owner: '',
         shared: true,
-        passwordNeeded,
-        dashboard
+        passwordNeeded: true
       });
     } catch (err) {
       return next(err.body);
