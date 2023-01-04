@@ -8,11 +8,11 @@ const router = express.Router();
 const Dashboard = require('../models/dashboard');
 
 /**
-* Function for implementing post request for /dashboards/clone-dashboard
-* Needs authorization, takes dashboard name and id as inputs
-* Returns correct response if dashboard cloned
-* else (409) if dashboard with given name exists
-*/
+ * Function for implementing post request for /dashboards/clone-dashboard
+ * Needs authorization, takes dashboard name and id as inputs
+ * Returns correct response if dashboard cloned
+ * else (409) if dashboard with given name exists
+ */
 router.post('/clone-dashboard',
   authorization,
   async (req, res, next) => {
@@ -38,6 +38,112 @@ router.post('/clone-dashboard',
       }).save();
 
       return res.json({ success: true });
+    } catch (err) {
+      return next(err.body);
+    }
+  });
+
+/**
+ * Function for implementing post request for /dashboards/check-password-needed
+ * Takes user, dashboard id as inputs
+ * Returns (409) if dashboard not found
+ * else returns success, and shared (false) if dashboard not shared and not owned by user
+ * else returns success, owner, shared, passwordNeeded (false), dashboard if shared and password not needed
+ * else returns success, owner, shared, passwordNeeded if password needed
+ */
+router.post('/check-password-needed',
+  async (req, res, next) => {
+    try {
+      const { user, dashboardId } = req.body;
+      const userId = user.id;
+
+      const foundDashboard = await Dashboard.findOne({ _id: mongoose.Types.ObjectId(dashboardId) }).select('+password');
+      if (!foundDashboard) {
+        return res.json({
+          status: 409,
+          message: 'The specified dashboard has not been found.'
+        });
+      }
+
+      const dashboard = {};
+      dashboard.name = foundDashboard.name;
+      dashboard.layout = foundDashboard.layout;
+      dashboard.items = foundDashboard.items;
+      dashboard.owner = foundDashboard.owner;
+
+      const isOwner = foundDashboard.owner.equals(userId);
+      const passwordNeeded = !!dashboard.password && !isOwner;
+
+      if (!foundDashboard.shared && !isOwner) {
+        return res.json({
+          success: true,
+          owner: '',
+          shared: false,
+        });
+      }
+
+      if (passwordNeeded) {
+        return res.json({
+          success: true,
+          shared: true,
+          passwordNeeded,
+        });
+      }
+
+      foundDashboard.views += 1;
+      await foundDashboard.save();
+
+      return res.json({
+        success: true,
+        shared: true,
+        passwordNeeded,
+        dashboard
+      });
+    } catch (err) {
+      return next(err.body);
+    }
+  });
+
+/**
+ * Function for implementing post request for /dashboards/check-password
+ * Takes dashboard id and password as inputs
+ * Returns success, correctPassword, owner, dashboard if dashboard found and password is correct
+ * else success, correctPassword (false) if dashboard found but password is not correct
+ * else (409) if dashboard not found
+ */
+router.post('/check-password',
+  async (req, res, next) => {
+    try {
+      const { dashboardId, password } = req.body;
+
+      const foundDashboard = await Dashboard.findOne({ _id: mongoose.Types.ObjectId(dashboardId) }).select('+password');
+      if (!foundDashboard) {
+        return res.json({
+          status: 409,
+          message: 'The specified dashboard has not been found.'
+        });
+      }
+      if (!foundDashboard.comparePassword(password, foundDashboard.password)) {
+        return res.json({
+          success: true,
+          correctPassword: false
+        });
+      }
+
+      foundDashboard.views += 1;
+      await foundDashboard.save();
+
+      const dashboard = {};
+      dashboard.name = foundDashboard.name;
+      dashboard.layout = foundDashboard.layout;
+      dashboard.items = foundDashboard.items;
+
+      return res.json({
+        success: true,
+        correctPassword: true,
+        owner: foundDashboard.owner,
+        dashboard
+      });
     } catch (err) {
       return next(err.body);
     }
@@ -101,38 +207,6 @@ router.post('/change-password',
 
       await foundDashboard.save();
 
-      return res.json({ success: true });
-    } catch (err) {
-      return next(err.body);
-    }
-  });
-
-/**
-* Function for implementing post request for /dashboards/save-dashboard
-* Needs authorization, takes id, layout, items, nextId as inputs
-* Returns correct response if dashboard saved
-* else (409) if dashboard not found
-*/
-router.post('/save-dashboard',
-  authorization,
-  async (req, res, next) => {
-    try {
-      const { id, layout, items, nextId } = req.body;
-
-      const result = await Dashboard.findOneAndUpdate({ _id: mongoose.Types.ObjectId(id), owner: mongoose.Types.ObjectId(req.decoded.id) }, {
-        $set: {
-          layout,
-          items,
-          nextId
-        }
-      }, { new: true });
-
-      if (result === null) {
-        return res.json({
-          status: 409,
-          message: 'The selected dashboard has not been found.'
-        });
-      }
       return res.json({ success: true });
     } catch (err) {
       return next(err.body);

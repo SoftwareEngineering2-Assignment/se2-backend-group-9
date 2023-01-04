@@ -138,4 +138,36 @@ router.get('/dashboard',
     }
   });
 
+/**
+ * Function for implementing post request for /dashboards/save-dashboard
+ * Needs authorization, takes id, layout, items, nextId as inputs
+ * Returns correct response if dashboard saved
+ * else (409) if dashboard not found
+ */
+router.post('/save-dashboard',
+  authorization,
+  async (req, res, next) => {
+    try {
+      const { id, layout, items, nextId } = req.body;
+
+      const result = await Dashboard.findOneAndUpdate({ _id: mongoose.Types.ObjectId(id), owner: mongoose.Types.ObjectId(req.decoded.id) }, {
+        $set: {
+          layout,
+          items,
+          nextId
+        }
+      }, { new: true });
+
+      if (result === null) {
+        return res.json({
+          status: 409,
+          message: 'The selected dashboard has not been found.'
+        });
+      }
+      return res.json({ success: true });
+    } catch (err) {
+      return next(err.body);
+    }
+  });
+
 module.exports = router;
