@@ -73,29 +73,31 @@ router.get('/test-url',
  */
 router.get('/test-url-request',
   async (req, res) => {
-    try {
-      const { url, type, headers, body: requestBody, params } = req.query;
+    const { url, type, headers, body: requestBody, params } = req.query;
 
-      let statusCode;
-      let body;
+    let options = {
+      headers: headers ? JSON.parse(headers) : {},
+    };
+
+    if (params) {
+      options.searchParams = JSON.parse(params);
+    }
+
+    if (requestBody) {
+      options.json = JSON.parse(requestBody);
+    }
+
+    try {
+      let response;
       switch (type) {
         case 'GET':
-          ({ statusCode, body } = await got(url, {
-            headers: headers ? JSON.parse(headers) : {},
-            searchParams: params ? JSON.parse(params) : {}
-          }));
+          response = await (url, options);
           break;
         case 'POST':
-          ({ statusCode, body } = await got.post(url, {
-            headers: headers ? JSON.parse(headers) : {},
-            json: requestBody ? JSON.parse(requestBody) : {}
-          }));
+          response = await got.post(url, options);
           break;
         case 'PUT':
-          ({ statusCode, body } = await got.put(url, {
-            headers: headers ? JSON.parse(headers) : {},
-            json: requestBody ? JSON.parse(requestBody) : {}
-          }));
+          response = await got.put(url, options);
           break;
         default:
           statusCode = 500;
@@ -103,8 +105,8 @@ router.get('/test-url-request',
       }
 
       return res.json({
-        status: statusCode,
-        response: body,
+        status: response.statusCode,
+        response: response.body,
       });
     } catch (err) {
       return res.json({
