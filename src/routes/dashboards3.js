@@ -96,16 +96,15 @@ router.post('/check-password',
       foundDashboard.views += 1;
       await foundDashboard.save();
 
-      const dashboard = {};
-      dashboard.name = foundDashboard.name;
-      dashboard.layout = foundDashboard.layout;
-      dashboard.items = foundDashboard.items;
-
       return res.json({
         success: true,
         correctPassword: true,
         owner: foundDashboard.owner,
-        dashboard
+        dashboard: {
+          name: foundDashboard.name,
+          layout: foundDashboard.layout,
+          items: foundDashboard.items,
+        }
       });
     } catch (err) {
       return next(err.body);
