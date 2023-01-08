@@ -1,5 +1,9 @@
 const baseUrl = process.env.PLATFORM_URI;
 const logo = `${process.env.SERVER_URI}/logo.png`;
+/**
+ * Generates a URL for resetting the password with the given token.
+ * @param {string} token The token to include in the URL.
+ */
 const link = (token) => `${baseUrl}/reset-password?token=${token}`;
 
 /**
