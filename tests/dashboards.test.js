@@ -13,6 +13,8 @@ require('dotenv').config(app.env);
 const authToken2 = process.env.AUTHTOKEN2;
 const dashboard0ID = '63973c77b28f93494ec19fa3'; //belongs to dummy_user2
 const wrongdashID = '6390be757de6d2fa567a3e34';
+const user_name = 'dummy2';
+const dummy2_id = '638e4b3d0618e2216c0ac833';
 
 /* Method for initializing server for tests */
 test.before(async (t) => {
@@ -36,7 +38,7 @@ test('GET /dashboards returns correct response and status code', async (t) => {
 
   t.assert(body.success);
   t.is(statusCode, 200);
-  //console.log(body.dashboards);
+  // console.log(body.dashboards);
 });
 
 /*
@@ -95,6 +97,7 @@ test('GET /dashboard returns correct response', async t => {
 
   const { body, statusCode } = await t.context.got(`dashboards/dashboard?token=${token}&id=${id}`);
 
+  //console.log(body);
   //if body.status != undefined means that the selected dashboard has not been found
   if (body.status) {
     t.is(body.status, 409);
@@ -130,7 +133,7 @@ test('GET /dashboard returns error status code if id is incorrect', async t => {
 });
 
 /*
-  Test for post request delete-dashboard,
+  Test for post request save-dashboard,
   returns success=true if dashboard with that id exists
   else if dashboard id is incorrect it returns status code = 409
 */
@@ -152,4 +155,131 @@ test('POST /save-dashboard returns correct response and status code', async t =>
   }).json();
 
   t.is(body2.status, 409);
+});
+
+/*
+  Test for post request clone-dashboard,
+  returns success=true if given name does not already exists
+  else if given name exists it returns status code = 409
+*/
+test('POST /clone-dashboard returns correct response and status code', async t => {
+  const token = authToken2;
+  const dashboardId = dashboard0ID;
+
+  // not run every time (would fill database with junk)
+  // const name = 'cloned_dashboard2';
+  // const body = await t.context.got.post(`dashboards/clone-dashboard?token=${token}`, {
+  //   json: { dashboardId, name }
+  // }).json();
+  // t.assert(body.success);
+
+  const existing_name = 'dummyDashboard';
+  const body2 = await t.context.got.post(`dashboards/clone-dashboard?token=${token}`, {
+    json: { dashboardId, 'name': existing_name }
+  }).json();
+
+  t.is(body2.status, 409);
+});
+
+/*
+  Test for post request share-dashboard,
+  returns success=true, shared if dashboard with that id exists and belong to the specific user
+  else if dashboard with given id doesn't exist (for the specific user) it returns status code = 409
+*/
+test('POST /share-dashboard returns correct response and status code', async t => {
+  const token = authToken2;
+
+  // everytime we run this the shared status changes(true/false)
+  // const dashboardId = '63973c77b28f93494ec19fa3';
+  // const body = await t.context.got.post(`dashboards/share-dashboard?token=${token}&id=${dummy2_id}`, {
+  //   json: { dashboardId }
+  // }).json();
+  // // console.log(body);
+  // t.assert(body.success);
+
+  // check error case
+  const body2 = await t.context.got.post(`dashboards/share-dashboard?token=${token}&id=${dummy2_id}`, {
+    json: { wrongdashID }
+  }).json();
+  t.is(body2.status, 409);
+});
+
+/*
+  Test for post request change-password,
+  returns success=true if dashboard with that id exists and password changed
+  else if dashboard with given id doesn't exist (for the specific user) it returns status code = 409
+*/
+test('POST /change-password returns correct response and status code', async t => {
+  const token = authToken2;
+  const password = 'dashpass';
+
+  const dashboardId = dashboard0ID;
+  const body = await t.context.got.post(`dashboards/change-password?token=${token}&id=${dummy2_id}`, {
+    json: { dashboardId, password }
+  }).json();
+  // console.log(body);
+  t.assert(body.success);
+
+  // check error case (not found)
+  const body2 = await t.context.got.post(`dashboards/change-password?token=${token}&id=${dummy2_id}`, {
+    json: { wrongdashID, password }
+  }).json();
+  t.is(body2.status, 409);
+});
+
+/*
+  Test for post request check-password-needed,
+  returns success=true, shared, passwordNeeded and dashboard's attributes if dashboard found and i am the owner || dashboard shared and pass not needed
+  else if dashboard with specific id not found it returns status code = 409
+  some cases not checked (would be redundant)
+*/
+test('POST /check-password-needed returns correct response and status code', async t => {
+  let dashboardId = dashboard0ID;
+  const user = { "name": user_name, "password": '', "email": '' };
+
+  const body = await t.context.got.post("dashboards/check-password-needed", {
+    json: { user, dashboardId }
+  }).json();
+  t.assert(body.success);
+
+  dashboardId = wrongdashID;
+  const body2 = await t.context.got.post("dashboards/check-password-needed", {
+    json: { user, dashboardId }
+  }).json();
+
+  t.is(body2.status, 409);
+});
+
+/*
+  Test for post request check-password,
+  returns success=true, correctPassword=true, owner's id, dashsboard's attributes if dashboard with that id exists and passwords match
+  else if dashboard exists but passwords don't match, returns success=true, correctPassword=flase
+  else if dashboard with specific id not found it returns status code = 409
+*/
+test('POST /check-password returns correct response and status code', async t => {
+  let dashboardId = dashboard0ID;
+  let password = 'dashpass'; //correct password
+
+  const body = await t.context.got.post("dashboards/check-password", {
+    json: { dashboardId, password }
+  }).json();
+  t.assert(body.success);
+
+  // check error case (passwords don't match)
+  password = 'notcorrect';
+  const body2 = await t.context.got.post("dashboards/check-password", {
+    json: { dashboardId, password }
+  }).json();
+
+  t.assert(body2.success);
+  t.assert(!body2.shared);
+
+  // check error case (not found)
+  dashboardId = wrongdashID;
+  password = 'dashpass';
+  const body3 = await t.context.got.post("dashboards/check-password", {
+    json: { dashboardId, password }
+  }).json();
+
+  t.is(body3.status, 409);
 });
