@@ -135,7 +135,7 @@ router.get('/test-db',
         keepAliveInitialDelay: 300000
       };
       try {
-        const conn = await mongosose.createConnection(uri, mongooseOptions);
+        const conn = await mongoose.createConnection(uri, mongooseOptions);
         const Coll = mongoose.models.Custom || mongoose.model('Custom', new mongoose.Schema(), collection);
         const data = await Coll.find();
         await conn.close();
