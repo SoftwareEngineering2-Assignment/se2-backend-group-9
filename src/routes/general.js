@@ -5,6 +5,7 @@ const router = express.Router();
 const User = require('../models/user');
 const Dashboard = require('../models/dashboard');
 const Source = require('../models/source');
+const mongoose = require('mongoose');
 
 /**
  * Function for implementing get request for /general/statistics
@@ -111,6 +112,45 @@ router.get('/test-url-request',
         status: 500,
         response: err.toString(),
       });
+    }
+  });
+
+/**
+* Function for implementing get request for /general/test-db
+* Takes uri, collection as inputs
+* Returns success and data
+* else returns success (false)
+*/
+router.get('/test-db',
+  async (req, res) => {
+    try {
+      const { uri, collection } = req.query;
+      const mongooseOptions = {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        useFindAndModify: false,
+        useUnifiedTopology: true,
+        poolSize: 100,
+        keepAlive: true,
+        keepAliveInitialDelay: 300000
+      };
+      try {
+        const conn = await mongosose.createConnection(uri, mongooseOptions);
+        const Coll = mongoose.models.Custom || mongoose.model('Custom', new mongoose.Schema(), collection);
+        const data = await Coll.find();
+        await conn.close();
+        return res.json({
+          success: true,
+          data,
+        });
+      } catch (err) {
+        return res.json({
+          success: false,
+          message: 'Could not connect to db',
+        });
+      }
+    } catch (err) {
+      return res.json({ success: false });
     }
   });
 
